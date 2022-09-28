@@ -76,6 +76,8 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[300],
+        canvasColor: Colors.grey[300],
+        // bottomAppBarColor,
       ),
       home: const MyHomePage(title: 'Habits'),
     );
@@ -132,28 +134,96 @@ class HomeViewState extends ConsumerState<MyHomePage> {
           ]
         ],
       ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddEntry()),
-          );
-          // final entryList = ref.read(entryListProvider.notifier);
-          // entryList.addEntry("New", "test", DateTime(2022, 2, 3, 13, 12, 3),
-          //     DateTime(2022, 2, 3, 14, 52, 47));
-        },
-        tooltip: 'Add new',
-        elevation: 0.0,
-        hoverElevation: 0.0,
-        focusElevation: 0.0,
-        disabledElevation: 0.0,
-        highlightElevation: 0.0,
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      bottomSheet: AddEntryBottomSheet(),
     );
   }
 }
+
+class BottomSheetOpen extends StateNotifier<bool> {
+  BottomSheetOpen() : super(false);
+
+  void toggle() {
+    state = !state;
+  }
+}
+
+final bottomSheetOpen = StateNotifierProvider<BottomSheetOpen, bool>((ref) {
+  return BottomSheetOpen();
+});
+
+final entryInputController =
+    Provider.autoDispose((ref) => TextEditingController());
+
+class AddEntryBottomSheet extends ConsumerWidget {
+  final bottomSheetBackgroundDecoration = BoxDecoration(
+    color: Colors.grey[400],
+    borderRadius: BorderRadius.circular(4.0),
+  );
+  final bottomSheetFieldDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(4.0),
+    border: Border.all(color: Colors.grey[600]!, width: 1.0),
+  );
+
+  AddEntryBottomSheet({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return BottomSheet(
+      enableDrag: false,
+      onClosing: () {},
+      builder: (BuildContext context) => AnimatedContainer(
+        constraints: ref.watch(bottomSheetOpen)
+            ? BoxConstraints(maxHeight: MediaQuery.of(context).size.height)
+            : BoxConstraints(maxHeight: 50),
+        decoration: bottomSheetBackgroundDecoration,
+        curve: Curves.easeOutCubic,
+        duration: Duration(milliseconds: 200),
+        alignment: ref.watch(bottomSheetOpen)
+            ? Alignment.topCenter
+            : Alignment.bottomCenter,
+        child: Wrap(
+          children: [
+            FocusScope(
+              child: Focus(
+                onFocusChange: (hasFocus) {
+                  ref.read(bottomSheetOpen.notifier).toggle();
+                },
+                child: Container(
+                  decoration: bottomSheetFieldDecoration,
+                  child: Wrap(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              // controller: ref.watch(entryInputController),
+                              onChanged: (text) {
+                                print('First text field: $text');
+                              },
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10),
+                                hintText: "What are you up to?",
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// A widget that animates height of a container with a textField from wrap content to screen height
 
 class AddEntry extends ConsumerWidget {
   const AddEntry({Key? key}) : super(key: key);
