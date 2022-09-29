@@ -8,14 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'model.dart';
 
 final entryListProvider = StateNotifierProvider<EntryList, List<Entry>>((ref) {
-  var entryList = EntryList();
-  entryList.addEntry("Entry 1", "test", DateTime(2022, 9, 27, 13, 12, 3),
-      DateTime(2022, 2, 3, 14, 52, 47));
-  entryList.addEntry("Entry 2", "test", DateTime(2022, 2, 3, 14, 53, 0),
-      DateTime(2022, 2, 3, 17, 21, 35));
-  entryList.addEntry("Entry 3", "test", DateTime(2022, 2, 3, 17, 22, 0),
-      DateTime(2022, 2, 3, 18, 12, 0));
-  // return entryList;
   return EntryList([
     Entry(
       id: "0",
@@ -140,6 +132,12 @@ class MyHomePage extends HookConsumerWidget {
         ),
       ),
       bottomNavigationBar: AddEntryBottomSheet(),
+      // // Test button
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   tooltip: 'Add Entry',
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
@@ -225,6 +223,7 @@ class AddEntryBottomSheet extends HookConsumerWidget {
                                     newEntryTitle,
                                     DateTime.now(),
                                     null,
+                                    null,
                                   );
                               newEntryController.clear();
                             },
@@ -244,54 +243,6 @@ class AddEntryBottomSheet extends HookConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// A widget that animates height of a container with a textField from wrap content to screen height
-
-class AddEntry extends ConsumerWidget {
-  const AddEntry({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final entryList = ref.watch(entryListProvider.notifier);
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        shadowColor: Colors.transparent,
-        bottomOpacity: 0.0,
-        elevation: 0.0,
-        centerTitle: true,
-        title: const Text("Add Entry", style: TextStyle(color: Colors.black)),
-      ),
-      body: Column(
-        children: [
-          TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Title',
-            ),
-          ),
-          TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Text',
-            ),
-          ),
-          ElevatedButton(
-              onPressed: () {
-                entryList.addEntry(
-                    "New",
-                    "test",
-                    DateTime(2022, 2, 3, 13, 12, 3),
-                    DateTime(2022, 2, 3, 14, 52, 47));
-                Navigator.pop(context);
-              },
-              child: const Text("Add Entry", style: TextStyle(fontSize: 24)))
-        ],
       ),
     );
   }

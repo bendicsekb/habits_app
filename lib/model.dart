@@ -51,17 +51,17 @@ class Entry {
 class EntryList extends StateNotifier<List<Entry>> {
   EntryList([List<Entry>? initialEntries]) : super(initialEntries ?? []);
 
-  void addEntry(
-      String text, String title, DateTime startTime, DateTime? endTime) {
+  void addEntry(String text, String title, DateTime startTime,
+      DateTime? endTime, int? satisfaction) {
     state = [
       ...state,
       Entry(
-        id: getRandomString(24),
-        text: text,
-        title: title,
-        startTime: startTime,
-        endTime: endTime,
-      )
+          id: getRandomString(24),
+          text: text,
+          title: title,
+          startTime: startTime,
+          endTime: endTime,
+          satisfaction: satisfaction)
     ];
     state.sort((a, b) => b.startTime.compareTo(a.startTime));
   }
@@ -78,6 +78,22 @@ class EntryList extends StateNotifier<List<Entry>> {
     state = state.map((entry) {
       if (entry.id == id) {
         return entry.copyWith(endTime: DateTime.now());
+      } else {
+        return entry;
+      }
+    }).toList();
+  }
+
+  void editEntry(String id, String? text, String? title, DateTime? startTime,
+      DateTime? endTime, int? satisfaction) {
+    state = state.map((entry) {
+      if (entry.id == id) {
+        return entry.copyWith(
+            text: text,
+            title: title,
+            startTime: startTime,
+            endTime: endTime,
+            satisfaction: satisfaction);
       } else {
         return entry;
       }
