@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:habits_app/string_extensions.dart';
 import 'package:habits_app/time_entry.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'model.dart';
 
@@ -84,7 +87,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends ConsumerStatefulWidget {
+class MyHomePage extends HookConsumerWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -99,17 +102,7 @@ class MyHomePage extends ConsumerStatefulWidget {
   final String title;
 
   @override
-  HomeViewState createState() => HomeViewState();
-}
-
-class HomeViewState extends ConsumerState<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final entryIds = ref.watch(entryIdsProvider);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
@@ -124,7 +117,7 @@ class HomeViewState extends ConsumerState<MyHomePage> {
         bottomOpacity: 0.0,
         elevation: 0.0,
         centerTitle: true,
-        title: Text(widget.title, style: const TextStyle(color: Colors.black)),
+        title: Text(title, style: const TextStyle(color: Colors.black)),
       ),
       body: ListView(
         children: [
@@ -151,10 +144,7 @@ final bottomSheetOpen = StateNotifierProvider<BottomSheetOpen, bool>((ref) {
   return BottomSheetOpen();
 });
 
-final entryInputController =
-    Provider.autoDispose((ref) => TextEditingController());
-
-class AddEntryBottomSheet extends ConsumerWidget {
+class AddEntryBottomSheet extends HookConsumerWidget {
   final bottomSheetBackgroundDecoration = BoxDecoration(
     color: Colors.grey[400],
     borderRadius: BorderRadius.circular(4.0),
@@ -168,6 +158,8 @@ class AddEntryBottomSheet extends ConsumerWidget {
   AddEntryBottomSheet({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final newEntryController = useTextEditingController();
+
     return BottomSheet(
       enableDrag: false,
       onClosing: () {},
@@ -197,9 +189,29 @@ class AddEntryBottomSheet extends ConsumerWidget {
                         children: [
                           Expanded(
                             child: TextField(
-                              // controller: ref.watch(entryInputController),
+                              controller: newEntryController,
                               onChanged: (text) {
-                                print('First text field: $text');
+                                // print('First text field: $text');
+                              },
+                              onSubmitted: (String value) {
+                                var newEntryTitle = 'no title';
+                                var newEntryText = 'New entry';
+                                final splitted = value.split(':');
+
+                                if (splitted.length > 1) {
+                                  newEntryTitle = splitted[0].toLowerCase();
+                                  newEntryText = splitted[1].capitalize();
+                                } else if (splitted.isNotEmpty &&
+                                    splitted[0].isNotEmpty) {
+                                  newEntryText = splitted[0].capitalize();
+                                }
+                                ref.read(entryListProvider.notifier).addEntry(
+                                      newEntryText,
+                                      newEntryTitle,
+                                      DateTime.now(),
+                                      null,
+                                    );
+                                newEntryController.clear();
                               },
                               decoration: InputDecoration(
                                 border: InputBorder.none,
