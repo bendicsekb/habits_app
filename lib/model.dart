@@ -63,6 +63,7 @@ class EntryList extends StateNotifier<List<Entry>> {
         endTime: endTime,
       )
     ];
+    state.sort((a, b) => b.startTime.compareTo(a.startTime));
   }
 
   void removeEntry(Entry target) {
