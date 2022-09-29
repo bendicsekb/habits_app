@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habits_app/string_extensions.dart';
 import 'package:habits_app/time_entry.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -119,13 +120,16 @@ class MyHomePage extends HookConsumerWidget {
         centerTitle: true,
         title: Text(title, style: const TextStyle(color: Colors.black)),
       ),
-      body: ListView(
-        children: [
-          for (var entryId in entryIds) ...[
-            const SizedBox(height: 6.0),
-            TimeEntry(id: entryId),
-          ]
-        ],
+      body: SlidableAutoCloseBehavior(
+        closeWhenOpened: true,
+        child: ListView(
+          children: [
+            for (var entryId in entryIds) ...[
+              const SizedBox(height: 6.0),
+              TimeEntry(id: entryId),
+            ]
+          ],
+        ),
       ),
       bottomSheet: AddEntryBottomSheet(),
     );
@@ -199,11 +203,14 @@ class AddEntryBottomSheet extends HookConsumerWidget {
                                 final splitted = value.split(':');
 
                                 if (splitted.length > 1) {
-                                  newEntryTitle = splitted[0].toLowerCase();
-                                  newEntryText = splitted[1].capitalize();
+                                  newEntryTitle =
+                                      splitted[0].trim().toLowerCase();
+                                  newEntryText =
+                                      splitted[1].trim().capitalize();
                                 } else if (splitted.isNotEmpty &&
                                     splitted[0].isNotEmpty) {
-                                  newEntryText = splitted[0].capitalize();
+                                  newEntryText =
+                                      splitted[0].trim().capitalize();
                                 }
                                 ref.read(entryListProvider.notifier).addEntry(
                                       newEntryText,

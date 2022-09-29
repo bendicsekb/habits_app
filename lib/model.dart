@@ -72,4 +72,14 @@ class EntryList extends StateNotifier<List<Entry>> {
   Entry getEntry(String id) {
     return state.firstWhere((entry) => entry.id == id);
   }
+
+  void stopClock(String id) {
+    state = state.map((entry) {
+      if (entry.id == id) {
+        return entry.copyWith(endTime: DateTime.now());
+      } else {
+        return entry;
+      }
+    }).toList();
+  }
 }

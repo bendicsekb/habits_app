@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habits_app/model.dart';
 import 'package:intl/intl.dart';
 
@@ -51,75 +52,102 @@ class TimeEntry extends ConsumerWidget {
     );
 
     final Entry entry = ref.watch(entryListProvider.notifier).getEntry(id);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(
-              top: 12.0, bottom: 12.0, left: 12.0, right: 4.0),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(entry.title, style: titleStyle),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        Text(hourFormat.format(entry.startTime),
-                            style: hourStyle),
-                        if (entry.endTime != null)
-                          Text(" - ${hourFormat.format(entry.endTime!)}",
-                              style: hourStyle),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 20,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(entry.text, style: entryTextStyle),
-                    Row(
-                      children: [EntryDuration(entry: entry)],
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
+    return Slidable(
+      key: ValueKey<String>(entry.id),
+      endActionPane: entry.endTime == null
+          ? ActionPane(
+              extentRatio: 0.20,
+              motion: ScrollMotion(),
+              children: [
+                SlidableAction(
+                  borderRadius: BorderRadius.circular(4.0),
                   flex: 1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  onPressed: (BuildContext context) {
+                    ref.read(entryListProvider.notifier).stopClock(entry.id);
+                  },
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.stop,
+                  label: 'Stop',
+                ),
+                Container(
+                  width: 4.0,
+                )
+              ],
+            )
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(4.0),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+                top: 12.0, bottom: 12.0, left: 12.0, right: 4.0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                      Text(entry.title, style: titleStyle),
+                      const SizedBox(height: 8.0),
+                      Row(
                         children: [
-                          ...[
-                            for (var i = 0; i < (entry.satisfaction ?? 0); i++)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.0),
-                                child: Container(
-                                  height: 5.0,
-                                  width: 5.0,
-                                  decoration: BoxDecoration(
-                                    color: SatisfactionColor.values[i].color,
-                                  ),
-                                ),
-                              )
-                          ].reversed
+                          Text(hourFormat.format(entry.startTime),
+                              style: hourStyle),
+                          if (entry.endTime != null)
+                            Text(" - ${hourFormat.format(entry.endTime!)}",
+                                style: hourStyle),
                         ],
-                      ),
+                      )
                     ],
-                  ))
-            ],
+                  ),
+                ),
+                Expanded(
+                  flex: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(entry.text, style: entryTextStyle),
+                      Row(
+                        children: [EntryDuration(entry: entry)],
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            ...[
+                              for (var i = 0;
+                                  i < (entry.satisfaction ?? 0);
+                                  i++)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 1.0),
+                                  child: Container(
+                                    height: 5.0,
+                                    width: 5.0,
+                                    decoration: BoxDecoration(
+                                      color: SatisfactionColor.values[i].color,
+                                    ),
+                                  ),
+                                )
+                            ].reversed
+                          ],
+                        ),
+                      ],
+                    ))
+              ],
+            ),
           ),
         ),
       ),
