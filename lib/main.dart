@@ -127,11 +127,12 @@ class MyHomePage extends HookConsumerWidget {
             for (var entryId in entryIds) ...[
               const SizedBox(height: 6.0),
               TimeEntry(id: entryId),
-            ]
+            ],
+            const SizedBox(height: 6.0),
           ],
         ),
       ),
-      bottomSheet: AddEntryBottomSheet(),
+      bottomNavigationBar: AddEntryBottomSheet(),
     );
   }
 }
@@ -163,14 +164,15 @@ class AddEntryBottomSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final newEntryController = useTextEditingController();
+    final bottomSheetClosedHeight = 60.0;
 
     return BottomSheet(
       enableDrag: false,
       onClosing: () {},
       builder: (BuildContext context) => AnimatedContainer(
         constraints: ref.watch(bottomSheetOpen)
-            ? BoxConstraints(maxHeight: MediaQuery.of(context).size.height)
-            : BoxConstraints(maxHeight: 50),
+            ? BoxConstraints(maxHeight: MediaQuery.of(context).size.height - 24)
+            : BoxConstraints(maxHeight: bottomSheetClosedHeight),
         decoration: bottomSheetBackgroundDecoration,
         curve: Curves.easeOutCubic,
         duration: Duration(milliseconds: 200),
@@ -185,52 +187,50 @@ class AddEntryBottomSheet extends HookConsumerWidget {
                   ref.read(bottomSheetOpen.notifier).toggle();
                 },
                 child: Container(
+                  height: bottomSheetClosedHeight,
                   decoration: bottomSheetFieldDecoration,
-                  child: Wrap(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: newEntryController,
-                              onChanged: (text) {
-                                // print('First text field: $text');
-                              },
-                              onSubmitted: (String value) {
-                                var newEntryTitle = 'no title';
-                                var newEntryText = 'New entry';
-                                final splitted = value.split(':');
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: newEntryController,
+                            onChanged: (text) {
+                              // print('First text field: $text');
+                            },
+                            onSubmitted: (String value) {
+                              var newEntryTitle = 'no title';
+                              var newEntryText = 'New entry';
+                              final splitted = value.split(':');
 
-                                if (splitted.length > 1) {
-                                  newEntryTitle =
-                                      splitted[0].trim().toLowerCase();
-                                  newEntryText =
-                                      splitted[1].trim().capitalize();
-                                } else if (splitted.isNotEmpty &&
-                                    splitted[0].isNotEmpty) {
-                                  newEntryText =
-                                      splitted[0].trim().capitalize();
-                                }
-                                ref.read(entryListProvider.notifier).addEntry(
-                                      newEntryText,
-                                      newEntryTitle,
-                                      DateTime.now(),
-                                      null,
-                                    );
-                                newEntryController.clear();
-                              },
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10),
-                                hintText: "What are you up to?",
-                              ),
+                              if (splitted.length > 1) {
+                                newEntryTitle =
+                                    splitted[0].trim().toLowerCase();
+                                newEntryText = splitted[1].trim().capitalize();
+                              } else if (splitted.isNotEmpty &&
+                                  splitted[0].isNotEmpty) {
+                                newEntryText = splitted[0].trim().capitalize();
+                              }
+                              ref.read(entryListProvider.notifier).addEntry(
+                                    newEntryText,
+                                    newEntryTitle,
+                                    DateTime.now(),
+                                    null,
+                                  );
+                              newEntryController.clear();
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 10),
+                              hintText: "What are you up to?",
                             ),
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
