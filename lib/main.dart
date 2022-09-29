@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:habits_app/string_extensions.dart';
 import 'package:habits_app/time_entry.dart';
@@ -104,7 +103,7 @@ class MyHomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final entryIds = ref.watch(entryIdsProvider);
+    final entries = ref.watch(entryListProvider);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -122,14 +121,22 @@ class MyHomePage extends HookConsumerWidget {
       ),
       body: SlidableAutoCloseBehavior(
         closeWhenOpened: true,
-        child: ListView(
-          children: [
-            for (var entryId in entryIds) ...[
-              const SizedBox(height: 6.0),
-              TimeEntry(id: entryId),
-            ],
-            const SizedBox(height: 6.0),
-          ],
+        child: Scrollbar(
+          child: ListView.builder(
+            physics: BouncingScrollPhysics(),
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  const SizedBox(height: 6.0),
+                  TimeEntry(entry: entries[index]),
+                  index == entries.length - 1
+                      ? const SizedBox(height: 6.0)
+                      : const SizedBox(height: 0.0),
+                ],
+              );
+            },
+          ),
         ),
       ),
       bottomNavigationBar: AddEntryBottomSheet(),

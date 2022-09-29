@@ -30,9 +30,9 @@ String formatSecond(Duration duration) {
 }
 
 class TimeEntry extends ConsumerWidget {
-  final String id;
+  final Entry entry;
 
-  const TimeEntry({Key? key, required this.id}) : super(key: key);
+  const TimeEntry({Key? key, required this.entry}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +51,6 @@ class TimeEntry extends ConsumerWidget {
       fontWeight: FontWeight.bold,
     );
 
-    final Entry entry = ref.watch(entryListProvider.notifier).getEntry(id);
     return Slidable(
       key: ValueKey<String>(entry.id),
       endActionPane: entry.endTime == null
