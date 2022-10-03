@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habits_app/list_design/habits_app.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'model.dart';
+import 'list_design/model/model.dart';
 
 final entryListProvider = StateNotifierProvider<EntryList, List<Entry>>((ref) {
   return EntryList([
