@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:habits_app/entry_details.dart';
 import 'package:habits_app/string_extensions.dart';
 import 'package:habits_app/time_entry.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -121,7 +122,16 @@ class MyHomePage extends HookConsumerWidget {
               return Column(
                 children: [
                   const SizedBox(height: 6.0),
-                  TimeEntry(entry: entries[index]),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EntryDetails(entry: entries[index])),
+                        );
+                      },
+                      child: TimeEntry(entry: entries[index])),
                   index == entries.length - 1
                       ? const SizedBox(height: 6.0)
                       : const SizedBox(height: 0.0),
@@ -227,7 +237,7 @@ class AddEntryBottomSheet extends HookConsumerWidget {
                                   );
                               newEntryController.clear();
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               contentPadding:
                                   EdgeInsets.symmetric(horizontal: 10),
