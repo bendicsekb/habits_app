@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:habits_app/main.dart';
 import 'package:habits_app/model.dart';
-import 'package:habits_app/time_entry.dart';
+import 'package:habits_app/list_design/time_entry.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class EntryDetails extends HookConsumerWidget {

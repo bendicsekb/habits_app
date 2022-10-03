@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:habits_app/entry_details.dart';
+import 'package:habits_app/list_design/entry_details.dart';
 import 'package:habits_app/model.dart';
 import 'package:intl/intl.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 String formatDuration(Duration duration) {
   String hours = duration.inHours.toString().padLeft(0, '2');
