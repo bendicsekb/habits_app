@@ -19,28 +19,90 @@ final _runningActivityButtonStyle = TextButton.styleFrom(
 );
 
 class Activity extends HookConsumerWidget {
-  final activityName;
+  final String activityName;
   const Activity({Key? key, required this.activityName}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final running = useState(false);
+    final controller = useAnimationController(
+      duration: const Duration(milliseconds: 1000),
+    );
     return TextButton(
       onPressed: () {
         running.value = !running.value;
+        if (running.value) {
+          controller.forward();
+        } else {
+          controller.reverse();
+        }
       },
-      style: running.value ? _activityButtonStyle : _runningActivityButtonStyle,
-      child: AnimatedCrossFade(
-        crossFadeState: running.value
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
-        duration: Duration(milliseconds: 300),
-        firstChild: Text(activityName),
-        secondChild: SizedBox(
-          width: 50,
-          height: 50,
-          child: Icon(Icons.play_arrow_rounded, size: 50),
+      style: running.value ? _runningActivityButtonStyle : _activityButtonStyle,
+      child: Center(
+        child: AnimatedPlayPauseButton(
+          controller: controller,
+          activityName: activityName,
+          running: running.value,
         ),
       ),
+    );
+  }
+}
+
+class AnimatedPlayPauseButton extends HookConsumerWidget {
+  final String activityName;
+  final bool running;
+  final AnimationController controller;
+  final TweenSequence<double> _opacitySequence;
+  AnimatedPlayPauseButton({
+    Key? key,
+    required this.controller,
+    required this.activityName,
+    required this.running,
+  })  : _opacitySequence = TweenSequence<double>([
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 0.0,
+              end: 1.0,
+            ),
+            weight: 1.0,
+          ),
+          TweenSequenceItem<double>(
+            tween: ConstantTween<double>(1.0),
+            weight: 1.0,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 1.0,
+              end: 0.0,
+            ),
+            weight: 1.0,
+          ),
+        ]),
+        super(key: key);
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final opacitySequence = useAnimation(_opacitySequence.animate(controller));
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Opacity(
+              opacity: 1 - opacitySequence,
+              child: Text(activityName),
+            ),
+            running
+                ? Opacity(
+                    opacity: opacitySequence,
+                    child: const Icon(Icons.play_arrow_rounded, size: 50),
+                  )
+                : Opacity(
+                    opacity: opacitySequence,
+                    child: const Icon(Icons.pause_rounded, size: 50),
+                  ),
+          ],
+        );
+      },
     );
   }
 }
