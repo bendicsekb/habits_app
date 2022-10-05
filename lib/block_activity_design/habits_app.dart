@@ -26,6 +26,8 @@ class MyHomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blockNames = ref.watch(blockNamesProvider);
+    final isAddActivities = ref.watch(blockAddProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -35,6 +37,7 @@ class MyHomePage extends HookConsumerWidget {
         itemBuilder: (BuildContext context, int index) {
           return Block(
             blockName: blockNames[index],
+            isAddActivity: isAddActivities[blockNames[index]]!,
           );
         },
       ),

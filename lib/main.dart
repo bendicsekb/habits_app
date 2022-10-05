@@ -88,6 +88,30 @@ final activityNamesPerBlockProvider =
   }
   return activityNamesPerBlock;
 });
+
+class BlockAddState extends StateNotifier<Map<String, bool>> {
+  BlockAddState(Map<String, bool> state) : super(state);
+  void add(String blockName) {
+    state[blockName] = true;
+    state = {...state};
+  }
+
+  void remove(String blockName) {
+    state[blockName] = false;
+    state = {...state};
+  }
+}
+
+final blockAddProvider =
+    StateNotifierProvider<BlockAddState, Map<String, bool>>((ref) {
+  final blockNames = ref.read(blockNamesProvider);
+  final blockNamesToBool = <String, bool>{};
+  for (final blockName in blockNames) {
+    blockNamesToBool[blockName] = false;
+  }
+  return BlockAddState(blockNamesToBool);
+});
+
 void main() {
   runApp(const ProviderScope(child: HabitsApp()));
 }

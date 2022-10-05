@@ -106,15 +106,3 @@ class AnimatedPlayPauseButton extends HookConsumerWidget {
     );
   }
 }
-
-class AddActivity extends HookConsumerWidget {
-  const AddActivity({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return TextButton(
-      onPressed: () {},
-      style: _activityButtonStyle,
-      child: Icon(Icons.add),
-    );
-  }
-}
