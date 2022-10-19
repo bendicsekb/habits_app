@@ -36,6 +36,7 @@ class Block extends HookConsumerWidget {
                     }
                     return Activity(
                       activityName: activities[blockName]![index],
+                      blockName: blockName,
                     );
                   },
                 ),

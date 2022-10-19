@@ -47,7 +47,7 @@ class Entry {
 class EntryList extends StateNotifier<List<Entry>> {
   EntryList([List<Entry>? initialEntries]) : super(initialEntries ?? []);
 
-  void addEntry(
+  String addEntry(
       String text, String block, DateTime startTime, DateTime? endTime) {
     state = [
       ...state,
@@ -58,7 +58,7 @@ class EntryList extends StateNotifier<List<Entry>> {
           startTime: startTime,
           endTime: endTime)
     ];
-    state.sort((a, b) => b.startTime.compareTo(a.startTime));
+    return state.last.id;
   }
 
   void removeEntry(Entry target) {
@@ -69,7 +69,7 @@ class EntryList extends StateNotifier<List<Entry>> {
     return state.firstWhere((entry) => entry.id == id);
   }
 
-  void stopClock(String id) {
+  void stopClock(String? id) {
     state = state.map((entry) {
       if (entry.id == id) {
         return entry.copyWith(endTime: DateTime.now());

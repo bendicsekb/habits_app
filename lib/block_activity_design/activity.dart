@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:habits_app/main.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final _activityButtonStyle = TextButton.styleFrom(
@@ -20,20 +21,28 @@ final _runningActivityButtonStyle = TextButton.styleFrom(
 
 class Activity extends HookConsumerWidget {
   final String activityName;
-  const Activity({Key? key, required this.activityName}) : super(key: key);
+  final String blockName;
+  const Activity(
+      {Key? key, required this.activityName, required this.blockName})
+      : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final running = useState(false);
     final controller = useAnimationController(
       duration: const Duration(milliseconds: 1000),
     );
+    final ValueNotifier<String?> currentEntryId = useState(null);
     return TextButton(
       onPressed: () {
         running.value = !running.value;
         if (running.value) {
           controller.forward();
+          currentEntryId.value = ref
+              .read(entryListProvider.notifier)
+              .addEntry(activityName, blockName, DateTime.now(), null);
         } else {
           controller.reverse();
+          ref.read(entryListProvider.notifier).stopClock(currentEntryId.value);
         }
       },
       style: running.value ? _runningActivityButtonStyle : _activityButtonStyle,
