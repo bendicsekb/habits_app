@@ -89,6 +89,7 @@ final activityNamesPerBlockProvider =
   return activityNamesPerBlock;
 });
 
+// itt siman eleg egy set vagy akar csak egy string attol fuggoen h egy vagy tobb lehet hozzaadas
 class BlockAddState extends StateNotifier<Map<String, bool>> {
   BlockAddState(Map<String, bool> state) : super(state);
   void add(String blockName) {

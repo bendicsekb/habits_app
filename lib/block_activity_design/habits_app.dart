@@ -26,6 +26,8 @@ class MyHomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final blockNames = ref.watch(blockNamesProvider);
+
+    // kirakni egy widgetbe (egy input csak blockName-el) ami megmondja hogy mit kell mutatni (hookConsumerWidgetnek csinalni)
     final isAddActivities = ref.watch(blockAddProvider);
 
     return Scaffold(
